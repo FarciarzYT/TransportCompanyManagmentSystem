@@ -1,4 +1,4 @@
-package kiedywakacje.com;
+package src.main.kiedywakacje.com.models;
 
 public enum PaymentType {
     CREDIT_CARD,
