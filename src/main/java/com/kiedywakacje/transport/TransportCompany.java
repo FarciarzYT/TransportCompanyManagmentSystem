@@ -102,6 +102,7 @@ public class TransportCompany {
             System.out.println("5. Rejestracja administratora");
             System.out.println("6. Generuj raporty");
             System.out.println("7. Zarządzanie pojazdami");
+            System.out.println("8. Usuń użytkownika");
         }
 
         System.out.println("0. Wyloguj się");
@@ -157,6 +158,13 @@ public class TransportCompany {
             case "7":
                 if (role == UserRole.ADMIN) {
                     showVehicleManagementMenu();
+                } else {
+                    System.out.println("✘ Nieprawidłowa opcja!");
+                }
+                break;
+            case "8":
+                if (role == UserRole.ADMIN) {
+                    deleteUser();
                 } else {
                     System.out.println("✘ Nieprawidłowa opcja!");
                 }
@@ -289,10 +297,110 @@ public class TransportCompany {
 
     private static void showUserManagement() {
         System.out.println("\n=== ZARZĄDZANIE UŻYTKOWNIKAMI ===");
-        System.out.println("Liczba użytkowników: " + userRepository.getUserCount());
-        System.out.println("Klienci: " + userRepository.getAllClients().size());
-        System.out.println("Kierowcy: " + userRepository.getAllDrivers().size());
-        System.out.println("Administratorzy: " + userRepository.getAllAdmins().size());
+        System.out.println("1. Statystyki użytkowników");
+        System.out.println("2. Lista wszystkich użytkowników");
+        System.out.println("3. Wyszukaj użytkownika");
+        System.out.print("Wybierz opcję: ");
+        
+        String choice = scanner.nextLine().trim();
+        switch (choice) {
+            case "1":
+                System.out.println("\nLiczba użytkowników: " + userRepository.getUserCount());
+                System.out.println("Klienci: " + userRepository.getAllClients().size());
+                System.out.println("Kierowcy: " + userRepository.getAllDrivers().size());
+                System.out.println("Administratorzy: " + userRepository.getAllAdmins().size());
+                break;
+            case "2":
+                showAllUsers();
+                break;
+            case "3":
+                searchUsers();
+                break;
+            default:
+                System.out.println("✘ Nieprawidłowa opcja!");
+        }
+    }
+
+    private static void searchUsers() {
+        System.out.print("\nPodaj frazę do wyszukania (nazwa użytkownika, imię i nazwisko lub email): ");
+        String query = scanner.nextLine().trim();
+        
+        List<User> results = userRepository.searchUsers(query);
+        
+        if (results.isEmpty()) {
+            System.out.println("✘ Nie znaleziono użytkowników pasujących do frazy: " + query);
+        } else {
+            System.out.println("\n=== WYNIKI WYSZUKIWANIA (" + results.size() + ") ===");
+            for (int i = 0; i < results.size(); i++) {
+                System.out.println((i + 1) + ". " + results.get(i));
+            }
+        }
+    }
+
+    private static void showAllUsers() {
+        List<User> allUsers = userRepository.getAllUsers();
+        if (allUsers.isEmpty()) {
+            System.out.println("\nBrak użytkowników w systemie.");
+            return;
+        }
+        
+        System.out.println("\n=== LISTA WSZYSTKICH UŻYTKOWNIKÓW ===");
+        for (int i = 0; i < allUsers.size(); i++) {
+            User user = allUsers.get(i);
+            System.out.println((i + 1) + ". " + user);
+        }
+    }
+
+    private static void deleteUser() {
+        User currentUser = authService.getCurrentUser();
+        List<User> allUsers = userRepository.getAllUsers();
+        
+        if (allUsers.isEmpty()) {
+            System.out.println("\nBrak użytkowników w systemie.");
+            return;
+        }
+        
+        System.out.println("\n=== USUWANIE UŻYTKOWNIKA ===");
+        System.out.println("Lista użytkowników:");
+        for (int i = 0; i < allUsers.size(); i++) {
+            User user = allUsers.get(i);
+            String currentMarker = user.equals(currentUser) ? " (TY)" : "";
+            System.out.println((i + 1) + ". " + user.getUsername() + " - " + 
+                             user.getFullName() + " (" + user.getRole().getDisplayName() + ")" + currentMarker);
+        }
+        
+        System.out.print("\nPodaj nazwę użytkownika do usunięcia (lub 'anuluj' aby anulować): ");
+        String username = scanner.nextLine().trim();
+        
+        if (username.equalsIgnoreCase("anuluj")) {
+            System.out.println("Operacja anulowana.");
+            return;
+        }
+        
+        User userToDelete = userRepository.findByUsername(username);
+        if (userToDelete == null) {
+            System.out.println("✘ Użytkownik o podanej nazwie nie istnieje.");
+            return;
+        }
+        
+        if (userToDelete.equals(currentUser)) {
+            System.out.println("✘ Nie możesz usunąć własnego konta!");
+            return;
+        }
+        
+        System.out.print("Czy na pewno chcesz usunąć użytkownika " + userToDelete.getFullName() + 
+                        " (" + userToDelete.getUsername() + ")? (t/n): ");
+        String confirm = scanner.nextLine().trim();
+        
+        if (confirm.equalsIgnoreCase("t")) {
+            if (userRepository.removeUser(username)) {
+                System.out.println("✔ Użytkownik został usunięty z systemu.");
+            } else {
+                System.out.println("✘ Błąd podczas usuwania użytkownika.");
+            }
+        } else {
+            System.out.println("Operacja anulowana.");
+        }
     }
 
     private static void showReportsMenu() {
@@ -627,7 +735,7 @@ public class TransportCompany {
                         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⠧⠀⠀⠀⠀⠀
                         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
                         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀""");
-        System.out.println("nasi deweloperzy nadal pracują na całą mapą...");
+        System.out.println("nasi deweloperzy nadal pracują nad całą mapą...");
     }
 }
 

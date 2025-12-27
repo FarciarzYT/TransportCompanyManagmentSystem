@@ -77,6 +77,22 @@ public class UserRepository {
         return new ArrayList<>(usersByUsername.values());
     }
 
+    public List<User> searchUsers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return getAllUsers();
+        }
+        String lowerQuery = query.toLowerCase();
+        List<User> results = new ArrayList<>();
+        for (User user : usersByUsername.values()) {
+            if (user.getUsername().toLowerCase().contains(lowerQuery) ||
+                user.getFullName().toLowerCase().contains(lowerQuery) ||
+                user.getEmail().toLowerCase().contains(lowerQuery)) {
+                results.add(user);
+            }
+        }
+        return results;
+    }
+
     public boolean removeUser(String username) {
         User user = usersByUsername.remove(username);
         if (user != null) {
