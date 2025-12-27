@@ -43,9 +43,21 @@ public class Vehicle {
 
     @Override
     public String toString() {
-        return String.format("Vehicle{registrationNumber='%s', type=%s, inspectionDate=%s, condition=%s, power=%dHP, seats=%d}",
-                registrationNumber, type.getDisplayName(), dateOfCarInspection,
-                technicalConditionOfVehicle.getDisplayName(), enginePower, numberOfSeats);
+        String inspectionStatus = needsInspection() ? "⚠ Wymaga przeglądu" : "✓ OK";
+        return String.format("┌─ Pojazd: %s ───────────────────────\n" +
+                             "│ Typ: %-28s                         \n" +
+                             "│ Stan: %-28s                        \n" +
+                             "│ Moc: %-4d KM                       \n" +
+                             "| Miejsc: %-2d                       \n" +
+                             "│ Przegląd: %-25s                    \n" +
+                             "│ Status: %-28s                      \n" +
+                             "└─────────────────────────────────────",
+                registrationNumber,
+                type.getDisplayName(),
+                technicalConditionOfVehicle.getDisplayName(),
+                enginePower, numberOfSeats,
+                dateOfCarInspection != null ? dateOfCarInspection.toString() : "Brak danych",
+                inspectionStatus);
     }
 
     public String getRegistrationNumber() {

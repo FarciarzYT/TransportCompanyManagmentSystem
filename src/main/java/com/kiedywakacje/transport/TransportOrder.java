@@ -30,13 +30,10 @@ public class TransportOrder {
         this.orderDate = LocalDateTime.now();
     }
 
-    public static void placeOrder(Scanner scanner) {
-        List<TransportOrder> orders = new ArrayList<>();
-
+    public static TransportOrder placeOrder(Scanner scanner, OrderRepository orderRepository, Client client) {
         System.out.println("\n--- NOWE ZLECENIE TRANSPORTOWE ---");
 
-        System.out.print("Podaj nazwę klienta: ");
-        String name = scanner.nextLine();
+        String name = client != null ? client.getFullName() : "";
 
         System.out.println("Dostępne kody krajów: PL, DE, FR, ES, UK, IT, SE, NL, BE, CZ, SK, AT, DK, NO");
         System.out.print("Podaj kod kraju pochodzenia: ");
@@ -45,7 +42,7 @@ public class TransportOrder {
         
         if (origin == null) {
             System.out.println("✘ Nieprawidłowy kod kraju. Zlecenie anulowane.");
-            return;
+            return null;
         }
 
         System.out.print("Podaj kod kraju docelowego: ");
@@ -54,7 +51,7 @@ public class TransportOrder {
         
         if (destination == null) {
             System.out.println("✘ Nieprawidłowy kod kraju. Zlecenie anulowane.");
-            return;
+            return null;
         }
 
         System.out.print("Podaj wagę ładunku (kg): ");
@@ -63,21 +60,28 @@ public class TransportOrder {
             weight = Double.parseDouble(scanner.nextLine());
             if (weight <= 0) {
                 System.out.println("✘ Waga musi być większa od zera. Zlecenie anulowane.");
-                return;
+                return null;
             }
         } catch (NumberFormatException e) {
             System.out.println("✘ Nieprawidłowy format wagi. Zlecenie anulowane.");
-            return;
+            return null;
         }
 
         System.out.print("Potwierdź trasę? (t/n): ");
         if (scanner.nextLine().equalsIgnoreCase("t")) {
             TransportOrder order = new TransportOrder(name, origin, destination, weight);
-            orders.add(order);
+            if (orderRepository != null) {
+                orderRepository.addOrder(order);
+            }
+            if (client != null) {
+                client.addOrder(order);
+            }
             System.out.println("✔ Zlecenie potwierdzone i zarejestrowane!");
             System.out.println(order);
+            return order;
         } else {
             System.out.println("✘ Zlecenie anulowane.");
+            return null;
         }
     }
 

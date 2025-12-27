@@ -75,7 +75,7 @@ public class Driver extends User {
 
     @Override
     public String toString() {
-        return String.format("Driver{username='%s', name='%s', rating=%s, salary=%.2f, trips=%d, license='%s'}",
+        return String.format("username='%s', name='%s', rating=%s, salary=%.2f, trips=%d, license='%s'",
                 getUsername(), getFullName(), rating, salary, numberOfAllDriverTrips, licenseNumber);
     }
 }
