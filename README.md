@@ -41,3 +41,5 @@ Główna klasa uruchomieniowa to `com.kiedywakacje.transport.TransportCompany`. 
 Domyślne konto administratora:
 *   **Login**: admin
 *   **Hasło**: admin123
+
+Zalecam testowanie projektu w innej konsoli niż w tej dostępnej przez Idea od jetbrians poniewaz nie chce wspolpracowac z metoda clearConsole() 
