@@ -38,10 +38,8 @@ public class TransportCompany {
         authService = new AuthenticationService(userRepository);
         reportService = new ReportService(orderRepository, vehicleRepository, userRepository);
 
-        createDefaultAdmin();
+        createDefaultUsers();
         createTestData();
-
-        System.out.println("=== SYSTEM ZARZĄDZANIA FIRMĄ TRANSPORTOWĄ ===\n");
         boolean running = true;
         while (running) {
             if (!authService.isLoggedIn()) {
@@ -59,7 +57,7 @@ public class TransportCompany {
     }
 
     private static boolean showMainMenu() {
-        System.out.println("\n=== MENU GŁÓWNE ===");
+        System.out.println("=*= SYSTEM ZARZĄDZANIA FIRMĄ TRANSPORTOWĄ =*=\n");
         System.out.println("1. Zaloguj się");
         System.out.println("2. Zarejestruj się jako klient");
         System.out.println("3. Wyjście");
@@ -518,14 +516,26 @@ public class TransportCompany {
         System.out.println("✔ Pojazd dodany do systemu!");
     }
 
-    private static void createDefaultAdmin() {
-        Admin defaultAdmin = new Admin("admin", "admin123", "admin@transport.pl",
+    private static void createDefaultUsers() {
+        Admin defaultAdmin = new Admin("admin", "123", "admin@transport.pl",
                 "Administrator Systemu", "ADMIN001", "IT");
+        Client defaultClient = new Client("client", "123", "client@transport.pl",
+                "client001", "213700000", "Void");
+        Driver defaultDriver = new Driver("driver", "123", "driver@transport.pl",
+                "driver001", Rating.STAR5, 5200.0, "RTA123");
         userRepository.addUser(defaultAdmin);
-        System.out.println("System: \n");
+        userRepository.addUser(defaultClient);
+        userRepository.addUser(defaultDriver);
+        System.out.println("====TWORZENIE OBIEKTOW TESTOWYCH====");
         System.out.println("Utworzono domyślnego administratora:");
         System.out.println("Username: admin");
-        System.out.println("Password: admin123\n");
+        System.out.println("Password: 123\n");
+        System.out.println("Utworzono domyślnego kierowce:");
+        System.out.println("Username: driver");
+        System.out.println("Password: 123\n");
+        System.out.println("Utworzono domyślnego clienta:");
+        System.out.println("Username: client");
+        System.out.println("Password: 123\n");
     }
 
     private static void clearConsole() {
